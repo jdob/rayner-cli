@@ -5,10 +5,22 @@ import random
 import requests
 import string
 import sys
+import time
 
 
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 8000
+
+
+RAINBOW = (
+    'ff0000',  # red
+    'ff9900',  # orange
+    'ff2200',  # yellow
+    '00ff00',  # green
+    '00ffff',  # cyan
+    '0000ff',  # blue
+    'bb00ff',  # purple
+)
 
 
 class Client(object):
@@ -30,6 +42,26 @@ class Client(object):
             'client_id': self.client_id
         }
         requests.put(self.url, data=body)
+
+    def rainbow(self, delay):
+        body = {
+            'hex': None,
+            'client_id': self.client_id
+        }
+        for c in RAINBOW:
+            body['hex'] = c
+            requests.put(self.url, data=body)
+            time.sleep(delay)
+
+    def random(self, count, delay):
+        body = {
+            'hex': None,
+            'client_id': self.client_id
+        }
+        for _ in range(count):
+            body['hex'] = random.choice(RAINBOW)
+            requests.put(self.url, data=body)
+            time.sleep(delay)
 
     @property
     def url(self):
@@ -57,10 +89,27 @@ def run(args):
         c.turn_off()
     elif args[0] == 'color':
         c.change_color_hex(args[1])
+    elif args[0] == 'rainbow':
+        if len(args) > 1:
+            delay = int(args[1])
+        else:
+            delay = 1
+        c.rainbow(delay)
+    elif args[0] == 'random':
+        if len(args) > 1:
+            count = int(args[1])
+        else:
+            count = 5
+        if len(args) > 2:
+            delay = int(args[2])
+        else:
+            delay = 1
+
+        c.random(count, delay)
 
 
 def print_usage():
-    print('Please specify one of: on, off, color <hex>')
+    print('Please specify one of: on, off, color <hex>, rainbow <delay>, random <count> <delay>')
 
 
 if __name__ == '__main__':
