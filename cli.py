@@ -13,13 +13,13 @@ DEFAULT_PORT = 8000
 
 
 RAINBOW = (
-    'ff0000',  # red
-    'ff9900',  # orange
-    'ff2200',  # yellow
-    '00ff00',  # green
-    '00ffff',  # cyan
-    '0000ff',  # blue
-    'bb00ff',  # purple
+    'ff4534',  # red
+    'ff8d1f',  # orange
+    'ffcd33',  # yellow
+    'ebff43',  # green
+    'b6b2ff',  # cyan
+    '5f16ff',  # blue
+    '7f54ff',  # purple
 )
 
 
@@ -63,6 +63,15 @@ class Client(object):
             requests.put(self.url, data=body)
             time.sleep(delay)
 
+    def state(self):
+        response = requests.get(self.url)
+        s = response.json()
+        print('On: %s' % s['on'])
+        print('Hex: %s' % s['hex'])
+        print('Hue: %s' % s['hue'])
+        print('Brightness: %s' % s['brightness'])
+        print('Saturation: %s' % s['saturation'])
+
     @property
     def url(self):
         return 'http://%s:%s/light/' % (self.host, self.port)
@@ -89,6 +98,8 @@ def run(args):
         c.turn_off()
     elif args[0] == 'color':
         c.change_color_hex(args[1])
+    elif args[0] == 'state':
+        c.state()
     elif args[0] == 'rainbow':
         if len(args) > 1:
             delay = int(args[1])
